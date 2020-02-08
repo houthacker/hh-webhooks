@@ -1,0 +1,16 @@
+{
+    "name": "houthacker/wc-webhooks",
+    "description": "WooCommerce WebHooks Processors",
+    "keywords": [
+        "wordpress",
+        "woocommerce"
+    ],
+    "license": "GPLv2",
+    "require": {
+        "php": "^7.2",
+        "automattic/woocommerce": "3.0.0"
+    },
+    "autoload": {
+        "psr-4": {"WWP\\": "includes/"}
+    }
+}
