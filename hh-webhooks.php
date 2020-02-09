@@ -15,9 +15,13 @@
  */
 
 require_once(__DIR__ . '/vendor/autoload.php');
+require_once(__DIR__ . '/includes/Settings.php');
+
+function hwh_log($messate) {
+}
 
 function hwh_process_webhook($request) {
-    $processor = new \WWP\WebHookProcessor();
+    $processor = new \HWH\WebHookProcessor();
     return $processor->process($request);
 }
 
@@ -29,14 +33,26 @@ function hwh_init_rest_api() {
 }
 
 function hwh_activate() {
-    \hh_log('hh_webhooks activated');  
+    \hwh_log('hh_webhooks activated');  
 }
 
 function hwh_deactivate() {
-    \hh_log('hh_webhooks deactivated');
+    \hwh_log('hh_webhooks deactivated');
+}
+
+function hwh_init_settings() {
+    $settings = new \HWH\Settings();
+    $settings->init_settings();
+}
+
+function hwh_add_menu() {
+    $settings = new \HWH\Settings();
+    $settings->add_menu();
 }
 
 add_action('rest_api_init', 'hwh_init_rest_api', 10, 0);
+add_action('admin_init', 'hwh_init_settings');
+add_action('admin_menu', 'hwh_add_menu');
 register_activation_hook(__FILE__, 'hwh_activate');
 register_deactivation_hook(__FILE__, 'hwh_deactivate');
 

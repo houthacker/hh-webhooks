@@ -1,5 +1,5 @@
 <?php
-namespace WWP;
+namespace HWH;
 
 class WebHookProcessor {
 
