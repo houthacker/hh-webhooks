@@ -15,6 +15,8 @@ class Settings {
         // Private key for communication with WooCommerce REST API
         \register_setting('hwh-order-forwarding', 'hwh-wc-public');
 
+        \register_setting('hwh-order-forwarding', 'hwh-wc-api-host');
+
         \add_settings_section(
             'hwh-accepted-secrets-section',
             __('Order Forwarding', 'default'),
@@ -61,6 +63,18 @@ class Settings {
             'hwh-wc-section',
             [
                 'label_for' => 'hwh-wc-public-field',
+                'class' => 'hwh-order-forwarding_row'
+            ]
+        );
+
+        \add_settings_field(
+            'hwh-wc-api-host-field',
+            __('WooCommerce API Host', 'default'),
+            [ $this, 'render_wc_api_host_field' ],
+            'hwh-order-forwarding',
+            'hwh-wc-section',
+            [
+                'label_for' => 'hwh-wc-api-host-field',
                 'class' => 'hwh-order-forwarding_row'
             ]
         );
@@ -116,6 +130,10 @@ class Settings {
 
     public function render_wc_public_field($args) {
         $this->render_input_text($args, 'hwh-wc-public', 50);
+    }
+
+    public function render_wc_api_host_field($args) {
+        $this->render_input_text($args, 'hwh-wc-api-host', 50);
     }
 
     public function render_section_header($args) {
