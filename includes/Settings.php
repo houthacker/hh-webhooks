@@ -4,7 +4,7 @@ namespace HWH;
 class Settings {
 
     public function init_settings() {
-        // Contais space-delimited list of accepted secrets in HTTP headers.
+        // Contais a newline-delimited list of accepted secrets in HTTP headers.
         // If a request does not contain a header with one of those secrets,
         // oir it's sent in an usupported header, access will be denied.
         \register_setting('hwh-order-forwarding', 'hwh-accepted-secrets');
