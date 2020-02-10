@@ -11,6 +11,6 @@
         "automattic/woocommerce": "3.0.0"
     },
     "autoload": {
-        "psr-4": {"WWP\\": "includes/"}
+        "psr-4": {"HWH\\": "includes/"}
     }
 }
