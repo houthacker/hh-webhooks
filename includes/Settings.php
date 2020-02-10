@@ -15,7 +15,20 @@ class Settings {
         // Private key for communication with WooCommerce REST API
         \register_setting('hwh-order-forwarding', 'hwh-wc-public');
 
+        // Hostname for communication with WooCommerce REST API
         \register_setting('hwh-order-forwarding', 'hwh-wc-api-host');
+
+        // Forwarding type: 'local-file' or 'http'
+        \register_setting('hwh-order-forwarding', 'hwh-edc-forward-type');
+
+        // Email address as registered at EDC
+        \register_setting('hwh-order-forwarding', 'hwh-edc-email');
+
+        // EDC API key
+        \register_setting('hwh-order-forwarding', 'hwh-edc-api-key');
+
+        // EDC Packing slip id 
+        \register_setting('hwh-order-forwarding', 'hwh-edc-packing-slip-id');
 
         \add_settings_section(
             'hwh-accepted-secrets-section',
@@ -27,6 +40,13 @@ class Settings {
         \add_settings_section(
             'hwh-wc-section',
             __('WooCommerce Settings', 'default'),
+            [ $this, 'render_section_header' ],
+            'hwh-order-forwarding'
+        );
+
+        \add_settings_section(
+            'hwh-edc-section',
+            __('EDC Settings', 'default'),
             [ $this, 'render_section_header' ],
             'hwh-order-forwarding'
         );
@@ -75,6 +95,54 @@ class Settings {
             'hwh-wc-section',
             [
                 'label_for' => 'hwh-wc-api-host-field',
+                'class' => 'hwh-order-forwarding_row'
+            ]
+        );
+
+        \add_settings_field(
+            'hwh-edc-forward-type-field',
+            __('EDC Forward Type', 'default'),
+            [ $this, 'render_edc_forward_type_field' ],
+            'hwh-order-forwarding',
+            'hwh-edc-section',
+            [
+                'label_for' => 'hwh-edc-forward-type-field',
+                'class' => 'hwh-order-forwarding_row'
+            ]
+        );
+
+        \add_settings_field(
+            'hwh-edc-email-field',
+            __('EDC Email Address', 'default'),
+            [ $this, 'render_edc_email_field' ],
+            'hwh-order-forwarding',
+            'hwh-edc-section',
+            [
+                'label_for' => 'hwh-edc-email-field',
+                'class' => 'hwh-order-forwarding_row'
+            ]
+        );
+
+        \add_settings_field(
+            'hwh-edc-api-key-field',
+            __('EDC API Key', 'default'),
+            [ $this, 'render_edc_api_key_field' ],
+            'hwh-order-forwarding',
+            'hwh-edc-section',
+            [
+                'label_for' => 'hwh-edc-api-key-field',
+                'class' => 'hwh-order-forwarding_row'
+            ]
+        );
+
+        \add_settings_field(
+            'hwh-edc-packing-slip-id-field',
+            __('EDC Packing Slip ID', 'default'),
+            [ $this, 'render_edc_packing_slip_id_field' ],
+            'hwh-order-forwarding',
+            'hwh-edc-section',
+            [
+                'label_for' => 'hwh-edc-packing-slip-id-field',
                 'class' => 'hwh-order-forwarding_row'
             ]
         );
@@ -136,10 +204,48 @@ class Settings {
         $this->render_input_text($args, 'hwh-wc-api-host', 50);
     }
 
+    public function render_edc_forward_type_field($args) {
+        $options = array(
+            '' => '--Select an option--',
+            'local-file' => 'Local file',
+            'http' => 'HTTP'
+        );
+        $this->render_select($args, 'hwh-edc-forward-type', $options);
+    }
+
+    public function render_edc_email_field($args) {
+        $this->render_input_text($args, 'hwh-edc-email', 50);
+    }
+
+    public function render_edc_api_key_field($args) {
+        $this->render_input_text($args, 'hwh-edc-api-key', 50);
+    }
+
+    public function render_edc_packing_slip_id_field($args) {
+        $this->render_input_text($args, 'hwh-edc-packing-slip-id', 50);
+    }
+
     public function render_section_header($args) {
         echo '<div class="wrap">';
         echo '<p>' . \apply_filters( 'the_title', $args['title']) . '</p>';
         echo '</div>';
+    }
+
+    private function render_select($args, $name, $options) {
+        $setting = \get_option($name);
+
+        echo '<select id="' . $name . '" name="' . $name . '">';
+        foreach ($options as $key => $value) {
+            $selected = "";
+            if (isset($setting) && $setting !== null) {
+                if (\strcmp($key, $setting) === 0) {
+                    $selected = "selected";
+                }
+            }
+
+            echo '<option value="' . $key . '" ' . $selected . '>' . $value . '</option>';
+        }
+        echo '</select>';
     }
 
     private function render_input_text($args, $name, $size) {

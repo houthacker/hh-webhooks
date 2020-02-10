@@ -35,16 +35,18 @@ class WebHookProcessor {
                 $order_nr = $params['arg'];
                 if (\is_numeric($order_nr)) {
                     $order = $wc_client->get('orders/' . $order_nr);
-                    $edc_order = EDCXmlOrder::from_wc_order($order);
-                    $forwarder = new EDCOrderForwarder($edc_order);
-                    $forwarder->forward();
 
-                    $status = 201;
-                    $message = 'Created';
+                    if ($order !== null) {
+                        $json_order = \json_decode($order, false, 512, JSON_THROW_ON_ERROR);
+                        
+                        \do_action('hwh_ready_for_forwarding', $json_order);
+                        $status = 201;
+                        $message = 'Created';
+                    }
                 }
 
                 // TODO log cause of HTTP 400
-            } catch (Exception $e) {
+            } catch (\Exception $e) {
                 // TODO log exception
                 $status = 500;
                 $message = 'Internal Server Error';
