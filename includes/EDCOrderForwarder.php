@@ -45,29 +45,23 @@ class EDCOrderForwarder {
             $xml = $this->to_edc_xml();
             $file = WP_PLUGIN_DIR . '/hh-webhooks/exports/' . $this->order->getReceiver()->getOwnOrderNumber() . '.xml';
 
-            // pretty print the xml
-            $dom = \dom_import_simplexml($xml)->ownerDocument;
-            $dom->formatOutput = true;
-            $dom->save($file);
-
             $this->set_order_status(
                 $this->order->getReceiver()->getOwnOrdernumber(),
                 'stored',
-                'OK'
+                'OK',
+                $xml
             );
         } catch (\Exception $e) {
             $this->set_order_status(
                 $this->order->getReceiver()->getOwnOrdernumber(),
                 'error',
-                $e->getmessage()
+                $e->getmessage(),
+                $xml
             );
         }
     }
 
     private function forward_to_http() {
-        // Also store the file locally for resending on failure
-        $this->forward_to_local_file();
-
         $xml = $this->to_edc_xml();
 
         // get pretty printed xml string
@@ -90,7 +84,8 @@ class EDCOrderForwarder {
             $this->set_order_status(
                 $this->order->getReceiver()->getOwnOrdernumber(),
                 'error',
-                'Could not send order ro EDC'
+                'Could not send order ro EDC',
+                $pretty_xml
             );
             return;
         }
@@ -104,19 +99,23 @@ class EDCOrderForwarder {
         $this->set_order_status(
             $this->order->getReceiver()->getOwnordernumber(),
             $status,
-            $message
+            $message,
+            $pretty_xml
         );
     }
 
-    private function set_order_status($order_id, $status, $status_message) {
+    private function set_order_status($order_id, $status, $status_message, $xml) {
         global $wpdb;
         $wpdb->replace($wpdb->prefix . 'hwh_orders',
             array(
                 'order_id'              => $order_id,
                 'order_status'          => $status,
-                'order_status_message'  => $status_message), 
+                'order_status_message'  => $status_message,
+                'order_xml'             => $xml
+            ), 
             array(
                 '%d',
+                '%s',
                 '%s',
                 '%s'
             )

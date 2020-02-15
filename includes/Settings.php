@@ -302,7 +302,8 @@ class Settings {
         $sql = "CREATE TABLE IF NOT EXISTS $table_name(
             order_id BIGINT(20) NOT NULL PRIMARY KEY,
             order_status ENUM('stored', 'forwarded', 'error'),
-            order_status_message TEXT
+            order_status_message TEXT,
+            order_xml LONGTEXT
         ) $charset_collate;";
 
         \dbDelta($sql);        
