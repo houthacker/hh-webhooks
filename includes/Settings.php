@@ -3,7 +3,17 @@ namespace HWH;
 
 require_once(ABSPATH . 'wp-admin/includes/upgrade.php');
 
+use HWH\OrderList;
+
 class Settings {
+
+    private $orders;
+
+    public function __construct() {
+        \add_filter('set-screen-option', [$this, 'set_screen'], 10, 3);
+
+        $this->orders = new OrderList();
+    }
 
     public function init_settings() {
         // Contais a newline-delimited list of accepted secrets in HTTP headers.
@@ -205,6 +215,19 @@ class Settings {
 
         echo '</form>';
         echo '</div>';
+
+        echo '<div class="wrap">';
+        echo '<h1>Forwarded Orders</h1>';
+        echo '<div id="forwarded_orders_container>';
+        echo '<div id="post-body" class="metabox-holder columns-3">';
+        echo '<div id="post-body-content">';
+        echo '<div class="meta-box-sortables ui-sortable">';
+        $this->orders->prepare_items();
+        $this->orders->display();
+        echo '</div>';
+        echo '</div>';
+        echo '</div>';
+        echo '</div>';
     }
 
     public function render_accepted_secrets_field($args) {
@@ -289,6 +312,10 @@ class Settings {
             echo \esc_html($setting);
         }
         echo '</textarea>';
+    }
+
+    public function set_screen($status, $option, $value) {
+        return $value;
     }
 
     /**
