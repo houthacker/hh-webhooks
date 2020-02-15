@@ -37,7 +37,7 @@ class EDCXmlOrder {
             throw new HWHException('Cannot convert empty object to EDCXmlOrder');
         }
 
-        $customer_details = self::create_customer_details($email, $api_key);
+        $customer_details = self::create_customer_details($email, $api_key, 'advanced');
         $receiver = self::create_receiver($json_order, $packing_slip_id);
         $products = self::create_products($json_order);
 
@@ -57,7 +57,7 @@ class EDCXmlOrder {
             self::extract_postalcode($json_order),
             self::extract_city($json_order),
             self::extract_country($json_order),
-            self:;extract_extra_email($json_order),
+            self::extract_extra_email($json_order),
             self::extract_own_ordernumber($json_order),
             null, // pakjegemak
             null, // pakjegemak_consumer_housenr
@@ -100,7 +100,7 @@ class EDCXmlOrder {
         return (string)$nr;
     }
 
-    private static function extract_house_nr_extra($json_order) {
+    private static function extract_house_nr_ext($json_order) {
         $raw = $json_order->shipping->address_2;
         $nr = (int)$raw;
         $start_idx = \strlen((string)$nr);

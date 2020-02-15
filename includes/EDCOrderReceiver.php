@@ -87,7 +87,7 @@ class EDCOrderReceiver {
     }
 
     public function getHouseNrExt() {
-        return this->house_nr_ext;
+        return $this->house_nr_ext;
     }
 
     public function getPostalcode() {

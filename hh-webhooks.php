@@ -26,9 +26,9 @@ function hwh_process_webhook($request) {
 }
 
 function hwh_init_rest_api() {
-    register_rest_route('hh-webhooks/v1', '/wc_payment_completed/', array(
+    register_rest_route('hh-webhooks/v1', '/wc_payment_completed', array(
         'methods' => \WP_REST_Server::CREATABLE,
-        'callback' => 'process_webhook'
+        'callback' => 'hwh_process_webhook'
     ));
 }
 
@@ -70,9 +70,10 @@ function hwh_forward_order($order) {
     $edc_email = \get_option('hwh-edc-email', null);
     $edc_api_key = \get_option('hwh-edc-api-key', null);
     $packing_slip_id = \get_option('hwh-edc-packing-slip-id', null);
+    $endpoint = \get_option('hwh-edc-endpoint', null);
 
     $forwarder = new HWH\EDCOrderForwarder($order, $edc_email, $edc_api_key
-        , $packing_slip_id);
+        , $packing_slip_id, $endpoint);
     $forwarder->forward($forward_type);
 }
 

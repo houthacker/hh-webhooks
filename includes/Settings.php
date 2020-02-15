@@ -1,6 +1,8 @@
 <?php
 namespace HWH;
 
+require_once(ABSPATH . 'wp-admin/includes/upgrade.php');
+
 class Settings {
 
     public function init_settings() {
@@ -26,6 +28,9 @@ class Settings {
 
         // EDC API key
         \register_setting('hwh-order-forwarding', 'hwh-edc-api-key');
+
+        // EDC Endpoint URL
+        \register_setting('hwh-order-forwarding', 'hwh-edc-endpoint');
 
         // EDC Packing slip id 
         \register_setting('hwh-order-forwarding', 'hwh-edc-packing-slip-id');
@@ -146,6 +151,20 @@ class Settings {
                 'class' => 'hwh-order-forwarding_row'
             ]
         );
+
+        \add_settings_field(
+            'hwh-edc-endpoint-field',
+            __('EDC Endpoint URL', 'default'),
+            [ $this, 'render_edc_endpoint_field' ],
+            'hwh-order-forwarding',
+            'hwh-edc-section',
+            [
+                'label_for' => 'hwh-edc-endpoint-field',
+                'class' => 'hwh-order-forwarding_row'
+            ]
+        );
+
+        $this->init_orders_table();
     }
 
     public function add_menu() {
@@ -225,6 +244,10 @@ class Settings {
         $this->render_input_text($args, 'hwh-edc-packing-slip-id', 50);
     }
 
+    public function render_edc_endpoint_field($args) {
+        $this->render_input_text($args, 'hwh-edc-endpoint', 50);
+    }
+
     public function render_section_header($args) {
         echo '<div class="wrap">';
         echo '<p>' . \apply_filters( 'the_title', $args['title']) . '</p>';
@@ -266,5 +289,22 @@ class Settings {
             echo \esc_html($setting);
         }
         echo '</textarea>';
+    }
+
+    /**
+     * Create the orders table if it doesn't already exist.
+     */
+    private function init_orders_table() {
+        global $wpdb;
+        $charset_collate = $wpdb->get_charset_collate();
+        $table_name = $wpdb->prefix . 'hwh_orders';
+
+        $sql = "CREATE TABLE IF NOT EXISTS $table_name(
+            order_id BIGINT(20) NOT NULL PRIMARY KEY,
+            order_status ENUM('stored', 'forwarded', 'error'),
+            order_status_message TEXT
+        ) $charset_collate;";
+
+        \dbDelta($sql);        
     }
 }

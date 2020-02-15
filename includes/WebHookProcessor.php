@@ -34,12 +34,11 @@ class WebHookProcessor {
                 $params = $request->get_json_params();
                 $order_nr = $params['arg'];
                 if (\is_numeric($order_nr)) {
-                    $order = $wc_client->get('orders/' . $order_nr);
+                    $order = $this->wc_client->get('orders/' . $order_nr);
 
                     if ($order !== null) {
-                        $json_order = \json_decode($order, false, 512, JSON_THROW_ON_ERROR);
-                        
-                        \do_action('hwh_ready_for_forwarding', $json_order);
+                        // Order is already parsed by json_parse()
+                        \do_action('hwh_ready_for_forwarding', $order);
                         $status = 201;
                         $message = 'Created';
                     }
@@ -49,7 +48,7 @@ class WebHookProcessor {
             } catch (\Exception $e) {
                 // TODO log exception
                 $status = 500;
-                $message = 'Internal Server Error';
+                $message = $e->getMessage();
             }
         }
 
@@ -89,7 +88,7 @@ class WebHookProcessor {
                 $secrets = explode(PHP_EOL, $raw_secrets);
                 foreach ($secrets as $secret) {
                     $trimmed_secret = \trim($secret);
-                    $hash = \base64_encode(\hash_hmac('sha_256',
+                    $hash = \base64_encode(\hash_hmac('sha256',
                         $request->get_body(), $trimmed_secret, true));
 
                     if (\strcmp($signature_header, $hash) === 0) {

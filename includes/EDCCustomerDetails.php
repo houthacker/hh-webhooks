@@ -45,4 +45,5 @@ class EDCCustomerDetails {
     public function getOutputMode() {
         return $this->output_mode;
     }
+}
 
