@@ -3,7 +3,7 @@
  * Plugin Name:         WooCommerce Order Forwarding
  * Plugin URI:          https://github.com/houthacker/hh-webhooks
  * Description:         Exposes endpoints for WooCommerce WebHooks to call
- * Version:             1.0.0
+ * Version:             1.1.0
  * Requires at least:   5.3
  * Requires PHP:        7.2
  * Author:              houthacker
