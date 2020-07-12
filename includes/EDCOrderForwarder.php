@@ -90,12 +90,13 @@ class EDCOrderForwarder {
             return;
         }
 
-        $message = \trim(\print_r($result, true));
+        $json = \json_decode($result, true);
         $status = 'forwarded';
-        if (\strcmp('OK', $message) !== 0) {
+        if (\strcmp('OK', $json['result']) !== 0) {
             $status = 'error';
         }
 
+        $message = $json['errorcode'] . ' - ' . $json['message'];
         $this->set_order_status(
             $this->order->getReceiver()->getOwnordernumber(),
             $status,

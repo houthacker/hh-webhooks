@@ -45,7 +45,7 @@ class EDCXmlOrder {
     }
 
     private static function create_customer_details($email, $api_key) {
-        return new EDCCustomerDetails($email, $api_key);
+        return new EDCCustomerDetails($email, $api_key, 'advanced');
     }
 
     private static function create_receiver($json_order, $packing_slip_id) {
@@ -78,7 +78,9 @@ class EDCXmlOrder {
         $products = array();
 
         foreach ($json_order->line_items as $line_item) {
-            \array_push($products, $line_item->sku);
+            for ($i = 0; $i < $line_item->quantity; $i++) {
+                \array_push($products, $line_item->sku);
+            }
         }
 
         return $products;
